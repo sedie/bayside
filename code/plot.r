@@ -169,7 +169,8 @@ ggsave(P, file="output/fit.pdf", width=10, height=6)
 forsim <- lapply( seq(length(forecast)), function(jj) { # each sim
     lapply( seq(length(data$end)), function(ii) { # each prov
         data.frame(
-            index=((ncol(data$counts) + 1) : (ncol(data$counts)+length(forecast[[1]][[1]]))) + min(dataRAW$year) - 1, 
+            index=((ncol(data$counts) + 1) : (ncol(data$counts)+
+                length(forecast[[1]][[1]]))) + min(dataRAW$year) - 1, 
             value=cumsum(forecast[[jj]][[ii]]), group=ii, sim=jj
         )
     } ) %>% rbind.fill
@@ -184,7 +185,7 @@ fore.table <- split(forsim, forsim$group) %>% # by group
     lapply( . , function(gg) { # for each group
         groupid <- unique(gg$group)
         vv <- lapply( split(gg, gg$sim), function(oo) { # for each sim
-            cs <- max(cumsum(oo$value))
+            cs <- max(oo$value)
             oo[ nrow(oo), ]$value <- cs
             oo[ nrow(oo), ]
         }) %>% rbind.fill

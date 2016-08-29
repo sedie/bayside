@@ -50,7 +50,7 @@ post.forecast <- function(data, ftime, model) {
 
         for(jj in 1:ftime) {  # I've changed the time seq to extend the series by ftime years
           # jj = 2
-          if(jj == 1) { # the starting point is the number of species described in 2014.
+          if(jj == 1) { # the starting point is the number of species described at end of time series.
             mu[jj] <- oo
             theta[jj] <- 0
             co[jj] <- oo[jj]
