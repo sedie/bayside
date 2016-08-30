@@ -33,6 +33,9 @@ posterior.sim <- function(data, model, over = FALSE) {
   # markov
   gam <- apply(outs$gamma, 2, function(x) sample(x, 1))  # for each prov
   eta <- apply(outs$eta, 2, function(x) sample(x, 1))  # for each prov
+  
+  # t=1
+  phi <- apply(outs$phi, 2, function(x) sample(x, 1))  # for each prov
 
   if(over) phi <- apply(outs$phi, 2, function(x) sample(x, 1))
 
@@ -47,7 +50,8 @@ posterior.sim <- function(data, model, over = FALSE) {
     oo <- c()  # counts over time
     for(jj in seq(data$end[ii])) {
       if(jj == 1) {
-        mu[jj] <- exp(coef0[ii] + coef1[ii] * jj)
+        mu[jj] <- phi
+        #mu[jj] <- exp(coef0[ii] + coef1[ii] * jj)
         theta[jj] <- 0
 
         oo[jj] <- initial[ii]
