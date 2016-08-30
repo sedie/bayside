@@ -3,7 +3,7 @@
 args <- commandArgs(trailingOnly=TRUE)
 OFFSET <- args[1]
 ftime <- args[2]
-OFFSET = TRUE
+
 # run data
 system( paste0("R CMD BATCH --vanilla '--args ", OFFSET, "' code/data.r") )
 # run model
