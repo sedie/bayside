@@ -1,7 +1,7 @@
 functions {
   real count_series_lp(int[] y, int[] off,
       vector coef, real alpha, real beta, // ACP part
-      real gamma, real eta) {  // zero-inflation part
+      real gamma, real eta, real phi) {  // zero-inflation part
 
     real lp;
     int Y;
@@ -20,7 +20,8 @@ functions {
       }
     }
 
-    for(i in 1:Y) {
+    omega[1] = phi;
+    for(i in 2:Y) {
       omega[i] = exp(coef[1] + coef[2] * i);
     }
 
@@ -74,6 +75,10 @@ parameters {
   real<lower=0,upper=1> beta_unc[P];
   real<lower=0,upper=1> gamma[P];
   real<lower=0,upper=1> eta[P];
+
+  real<lower=0> phi[P]; // param at t = 1
+  real mu_phi; // param at t = 1
+  real<lower=0> sigma_phi; // param at t = 1
 }
 transformed parameters {
   real<lower=0,upper=1> beta[P];
@@ -91,6 +96,10 @@ model {
     beta_unc[p] ~ beta(1, 3);
   }
 
+  phi ~ lognormal(mu_phi, sigma_phi);
+  mu_phi ~ normal(0, 1);
+  sigma_phi ~ cauchy(0, 1);
+
   Omega ~ lkj_corr(2);
   sigma ~ cauchy(0, 1);
   mu[1] ~ normal(0, 5);
@@ -100,6 +109,7 @@ model {
   }
 
   for(p in 1:P) {
-    target += count_series_lp(get_seg(counts[p], end[p]), get_seg(off[p], end[p]), coef[p], alpha[p], beta[p], gamma[p], eta[p]);
+    target += count_series_lp(get_seg(counts[p], end[p]), 
+        get_seg(off[p], end[p]), coef[p], alpha[p], beta[p], gamma[p], eta[p], phi[p]);
   }
 }
