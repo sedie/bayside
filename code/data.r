@@ -27,7 +27,6 @@ jgroup <- ncol(count.matrix)
 npred <- 1
 
 starts <- apply(count.matrix, 2, function(x) min(which(x != 0)))
-count.matrix[starts[1], 1]
 data <- list()
 for(ii in seq(jgroup)) {
   long <- length(count.matrix[, ii])
