@@ -222,51 +222,6 @@ P <- ggplot( ) +
     xlab("Year of Description")
 ggsave(P, file="output/regression.pdf", width=10, height=6)
 
-PP <- inner_join(mu_sim, mapping, by="group") %>%
-    strsplit(x=as.character(.$groupname), split="-" ) %>% 
-    data.frame( do.call(rbind, . ) ) %>%
-    dplyr::rename(clim=X1, coast=X2) %>%
-    cbind(. , mu_sim)
-
-P <- ggplot(PP) +
-    geom_line(aes(year, mu, group=group, col=clim), lwd=0.75) +
-    scale_colour_hue(h=c(0, 270), c=100, l=70, h.start=0, direction=1) +
-    facet_wrap(~coast) +
-    theme_bw()
-ggsave(P, file="output/coastline_regression.pdf", width=7, height=5)
-
-# ggplot(PP) +
-#     geom_line(aes(year, mu, group=group, col=coast), lwd=0.75) +
-#     scale_colour_hue(h=c(0, 270), c=100, l=70, h.start=0, direction=1) +
-#     facet_wrap(~clim) +
-#     theme_bw()
-
-
-# obs <- filter(both, sim==0) # subset to observed series
-# mu_sim
-
-
-# sims <- filter(both, sim!=0) %>% # subset a sample of simmed series
-#     split( . , .$group) %>% # group by group
-#     lapply( . , function(oo){ # for each group
-#         ids <- sample(unique(oo$sim), 200) # sample 200sims
-#         oo[ oo$sim %in% ids, ] # subset sims
-#     } ) %>% rbind.fill # bind together
-# med_sim <- sims %>%
-#     group_by(group, year) %>%
-#     dplyr::summarize(med=median(value)) %>%
-#     data.frame()
-
-# P <- ggplot( ) +
-#     geom_path(data=filter(obs, group %in% c(14,16)), aes(x=year, y=value)) +
-#     geom_path(data=filter(med_sim, group %in% c(14,16)), aes(year, med), col="gray80") + 
-#     facet_wrap(~group, labeller=as_labeller(labels) ) +
-#     ylab("Number of Species") + 
-#     xlab("Year of Description") +
-#     theme_bw()
-# ggsave(P, file="output/count_fit.pdf", width=10, height=6)
-
-
 
 #
 #       END \\ PLOT MODEL FIT
