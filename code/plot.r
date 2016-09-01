@@ -143,7 +143,7 @@ lambda <- lapply(1:length(end), function(ii) {
         b1 <- cf2[kk]
         time <- 1:end[ii]
         lam <- calc.lambda(time, b0=b0, b1=b1)
-        cbind( time=259 - rev(time), lam, group=ii, sim=kk) # NEED TO FIX TIME LENGTH
+        cbind( time=max(time) - rev(time), lam, group=ii, sim=kk)
     }) # end coef pair
     res <- data.frame( do.call(rbind, cPair) )
     res
