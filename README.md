@@ -18,6 +18,8 @@ Please refer to the example data file in `data/data.csv`. No missing data allowe
 - **species_authority**: CHARACTER {any length} -- naming authority of species. **NOTE**, do no include year of description in this field, only the unique name of authors on that publication.
 - **year**: INTEGER [1, Inf) -- the year the species was described
 
+This model is really designed for comparing groups, however it will work for single groups too.
+
 ## Run Model
 
 The model can be executed through the command line from the project parent directory using:
@@ -29,6 +31,10 @@ where the first argument is TRUE/FALSE for whether to include publications as an
 The call above executes the individual model components in sequence from `R/*`.
 
 Alternatively, the model can be run within an active R session using the specified run structure in `bayside.r`.
+
+### Choice of Priors
+
+As coded, the model uses largely defaul priors following the STAN manual. All edits to priors must be maded directly in the STAN code.
 
 ## Results
 
