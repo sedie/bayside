@@ -34,7 +34,7 @@ Alternatively, the model can be run within an active R session using the specifi
 
 ### Choice of Priors
 
-As coded, the model uses largely default priors following the STAN manual. Changing priors must be done directly in the STAN code.
+As coded, the model uses largely default priors following the Stan manual. Changing priors must be done directly in the Stan code.
 
 ## Results
 
@@ -49,7 +49,7 @@ Relevant model output dumped into the `output/` directory includes:
 
 ## Troubleshooting
 
-### STAN fit
+### Stan fit
 
 There's no telling how long the chains will need to be to get good mixing. For 18 groups and ~6000 species over 256 years we found that 5000 iterations was sufficient. The code is set up to do 10000 iterations with 5000 for warmup. Modify iterations in `stan` function call in `code/model.r`.
 
