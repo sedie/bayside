@@ -1,13 +1,15 @@
 # BAYSIDE - (BAYesian SpecIes DiscovEry)
 
+[![DOI](https://zenodo.org/badge/66583691.svg)](https://zenodo.org/badge/latestdoi/66583691)
+
 ## Required Software
 - R (with the following packages):
-    - rstan
-    - dplyr
-    - plyr
-    - gamlss.dist
-    - ggplot2
-    - parallel
+    - `rstan`
+    - `dplyr`
+    - `plyr`
+    - `gamlss.dist`
+    - `ggplot2`
+    - `parallel`
         * STAN sampler is set to run with 4 chains on 4 cores in parallel. Sections of the posterior simulation and forecasting are also set to run with 4 parallel cores. User should edit code directly to either dial up or dial down the number cores to use.
 
 ## Data
