@@ -36,7 +36,7 @@ Alternatively, the model can be run within an active R session using the specifi
 
 ### Choice of Priors
 
-As coded, the model uses largely default priors following the Stan manual. Changing priors must be done directly in the Stan code.
+As coded, the model uses largely default priors following the [Stan manual](http://mc-stan.org/documentation/). Changing priors must be done directly in the Stan code.
 
 ## Results
 
