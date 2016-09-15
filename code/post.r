@@ -42,13 +42,13 @@ posterior.sim <- function(data, model, over = FALSE) {
   # by province
   for(ii in seq(p)) {
     # get the offset segment
-    toff <- rev(rev(data$off[ii, ])[seq(data$end[ii])])
+    toff <- data$off[ii, ][data$str[ii]:data$end[ii]]
 
     # by time point
     mu <- c()
     theta <- c()
     oo <- c()  # counts over time
-    for(jj in seq(data$end[ii])) {
+    for(jj in seq(data$end[ii] - (data$str[ii] - 1))) {
       if(jj == 1) {
         mu[jj] <- phi
         #mu[jj] <- exp(coef0[ii] + coef1[ii] * jj)
@@ -76,6 +76,7 @@ posterior.sim <- function(data, model, over = FALSE) {
 
         }
       }
+      oo <- c(rep(0, data$str[ii] - 1), oo)
     }
     sims[[ii]] <- oo
   }
