@@ -1,11 +1,13 @@
 # build data object for model fit
 args <- commandArgs(trailingOnly=TRUE)
 OFFSET <- as.logical(args[1])
+#OFFSET <- TRUE
 
 library(plyr)
 library(rstan)
 
 # change as necessary
+#data <- read.csv("../data/data.csv")
 data <- read.csv("data/data.csv")
 
 duration <- seq(from = min(data$year), to = max(data$year))
@@ -63,7 +65,9 @@ if( ! OFFSET ){  # set offset to zero
     pub.matrix[] <- 0
 }
 
-data <- list(N = N, P = P, end = len, counts = cc, off = t(pub.matrix))
+data <- list(N = N, P = P, str = as.numeric(starts), end = len, 
+             counts = cc, off = t(pub.matrix))
 
-with( data, {stan_rdump(list = c('N', 'P', 'end', 'counts', 'off'),
+with( data, {stan_rdump(list = c('N', 'P', 'str', 'end', 'counts', 'off'),
+    #file = '../data/dump/count_info.data.R')} )
     file = 'data/dump/count_info.data.R')} )
