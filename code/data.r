@@ -39,11 +39,10 @@ for(ii in seq(jgroup)) {
 years.named <- llply(data, function(x) names(x$counts))
 
 
-# switch it up, making first col the first year things named
 cc <- list()
 len <- laply(data, function(x) length(x$counts))
 for(ii in seq(length(data))) {
-  cc[[ii]] <- c(data[[ii]]$counts, rep(0, (max(len) - len[ii])))
+  cc[[ii]] <- c(rep(0, (max(len) - len[ii])), data[[ii]]$counts)
 }
 cc <- Reduce(rbind, cc)
 colnames(cc) <- NULL
@@ -65,7 +64,7 @@ if( ! OFFSET ){  # set offset to zero
     pub.matrix[] <- 0
 }
 
-data <- list(N = N, P = P, str = as.numeric(starts), end = len, 
+data <- list(N = N, P = P, str = as.numeric(starts), end = rep(max(len), P), 
              counts = cc, off = t(pub.matrix))
 
 with( data, {stan_rdump(list = c('N', 'P', 'str', 'end', 'counts', 'off'),
