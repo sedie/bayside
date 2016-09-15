@@ -42,7 +42,7 @@ posterior.sim <- function(data, model, over = FALSE) {
   # by province
   for(ii in seq(p)) {
     # get the offset segment
-    toff <- rev(rev(data$off[ii, ])[seq(data$end[ii])])
+    toff <- data$off[ii, ][ seq(data$end[ii]) ]
 
     # by time point
     mu <- c()

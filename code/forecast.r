@@ -38,7 +38,7 @@ post.forecast <- function(data, ftime, model) {
     # by province
     out <- list()
     for(ii in seq(p)) {
-        all_toff <- rev(rev(data$off[ii, ])[seq(data$end[ii])])
+        all_toff <- data$off[ii, ][ seq(data$end[ii]) ]
         # generate offset segment by sampling past decade of offsets
         toff <- sample(all_toff[ (length(all_toff) - ftime ) : length(all_toff) ], ftime, replace=TRUE)
 
