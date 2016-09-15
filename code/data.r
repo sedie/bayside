@@ -57,13 +57,17 @@ rownames(pub.matrix) <- rownames(count.matrix)
 for(ii in seq(length(npub))) {
   pub.matrix[rownames(pub.matrix) %in% names(npub[[ii]]), ii] <- npub[[ii]]
 }
-
-
-if( ! OFFSET ){  # set offset to zero
-    pub.matrix[] <- 0
+# make first col the first description
+pubs <- array(0, dim(count.matrix))
+for(ii in seq(length(data))) {  
+  pubs[1:len[ii], ii] <- pub.matrix[ starts[ii]:nrow(pub.matrix), ii]
 }
 
-data <- list(N = N, P = P, end = len, counts = cc, off = t(pub.matrix))
+if( ! OFFSET ) {  # set offset to zero
+    pubs[] <- 0
+}
+
+data <- list(N = N, P = P, end = len, counts = cc, off = t(pubs))
 
 with( data, {stan_rdump(list = c('N', 'P', 'end', 'counts', 'off'),
     file = 'data/dump/count_info.data.R')} )
