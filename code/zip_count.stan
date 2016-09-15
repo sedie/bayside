@@ -50,18 +50,11 @@ functions {
     }
     return lp;
   }
-  int[] get_seg(int[] y, int end) {
-    int hold[end];
-
-    for(i in 1:end) {
-      hold[i] = y[i];
-    }
-    return hold;
-  }
 }
 data {
   int<lower=0> N;
   int<lower=0> P;
+  int<lower=0> str[P];
   int<lower=0> end[P];
   int<lower=0> counts[P, N];
   int<lower=0> off[P, N];
@@ -109,7 +102,8 @@ model {
   }
 
   for(p in 1:P) {
-    target += count_series_lp(get_seg(counts[p], end[p]), 
-        get_seg(off[p], end[p]), coef[p], alpha[p], beta[p], gamma[p], eta[p], phi[p]);
+    target += count_series_lp(counts[p][str[p]:end[p]],
+        off[p][str[p]:end[p]], 
+        coef[p], alpha[p], beta[p], gamma[p], eta[p], phi[p]);
   }
 }
