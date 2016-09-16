@@ -43,6 +43,7 @@ posterior.sim <- function(data, model, over = FALSE) {
   sims <- list() # store simulations
   # by province
   for(ii in seq(p)) {
+    toff <- data$off[ii, ][data$str[ii]:data$end[ii]] # offset segment starts at first naming year
     mu <- c()
     theta <- c()
     oo <- c()  # counts over time
@@ -73,6 +74,7 @@ posterior.sim <- function(data, model, over = FALSE) {
         }
       } 
     }
+    oo <- c(rep(0, data$str[ii] - 1), oo)
     sims[[ii]] <- oo
   }
   sims
