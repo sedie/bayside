@@ -13,4 +13,4 @@ system("R CMD BATCH --vanilla code/post.r")
 # run forecast
 system(paste0("R CMD BATCH --vanilla '--args ", ftime, "' code/forecast.r ") )
 # run plot
-system(paste0("R CMD BATCH --vanilla code/plot.r") )
+system(paste0("R CMD BATCH --vanilla '--args ", OFFSET, "' code/plot.r") )
