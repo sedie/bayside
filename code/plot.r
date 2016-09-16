@@ -1,4 +1,7 @@
 # visualize results from model fit and forecasting
+args <- commandArgs(trailingOnly=TRUE)
+OFFSET <- as.logical(args[1])
+# OFFSET <- TRUE
 
 library(dplyr)
 library(plyr)
@@ -45,9 +48,10 @@ mapping <- data.frame(
 # cumulative series for observed data
 cumm <- lapply( seq(nrow(data$counts)), function(ii) { # each prov
     data.frame(
-            index=ncol(data$counts) - rev(seq(data$end[ii])), 
+            index=data$str[ii]:data$end[ii],
              value=data$counts[ii, 1:data$end[ii]],
              cml_value=cumsum(data$counts[ii, 1:data$end[ii]]),
+             off=data$off[ii, ][ data$str[ii]:data$end[ii] ],
              group=ii
     )
 }) %>% rbind.fill
@@ -59,7 +63,8 @@ cummsim <- lapply( seq(length(allsim)), function(jj) { # each sim
         data.frame(
             index=ncol(data$counts) - rev(seq(data$end[ii])), 
             value=allsim[[jj]][[ii]],
-            cml_value=cumsum(allsim[[jj]][[ii]]), group=ii, sim=jj
+            cml_value=cumsum(allsim[[jj]][[ii]]), group=ii, sim=jj,
+            off=data$off[ii, ][ data$str[ii]:data$end[ii] ],
         )
     } ) %>% rbind.fill
 }) %>% rbind.fill
@@ -78,9 +83,9 @@ Z <- split(both, both$group) # split by group
 #
 
 
-# for each province, determine the mean number of species per simulation
-ex.mus <- lapply( 1:length(allsim[[1]]), function(ii) {
-    mean( unlist( lapply( sapply(allsim, "[", ii), sum) ) )
+# for each group, determine the mean number of species per simulation
+ex.med <- lapply( 1:length(allsim[[1]]), function(ii) {
+    median( unlist( lapply( sapply(allsim, "[", ii), sum) ) )
 } ) %>% do.call(rbind, .)
 # and the CI
 ex.CI <- lapply( 1:length(allsim[[1]]), function(ii){
@@ -91,18 +96,18 @@ obs.count <- lapply(Z, function(z) {
     max( z[ z$sim==0, "cml_value"] )
 }) %>% do.call(rbind, .)
 
-# outs$coef[2] is the coefficient that estimates the long-term trend in
-# description rate, it's in log units so need exponentiate it
-# where 0 equals means no trend, positive means increasing description
+# outs$coef[2] is the coefficient that estimates the long-term trend in \\
+# description rate, it's in log units so need to exponentiate it \\
+# where 0 equals means no trend, positive means increasing description \\
 #  through time and negative is decreasing...
-# `coef` is an array where 
+# `coef` is an array where \\
 # [posterior sample [1:4000], province number[1:16], coefficient[1:2] ]
 coef <- rstan::extract(zips, par="coef")[[1]]
 # pull out the second coefficient for each province across each 
 # posterior sample
 cf2 <- apply(coef, 1, function(i) i[ , 2] )
-mean_cf2 <- data.frame(provid=1:nrow(cf2),
-    slowdown=apply(cf2, 1, mean) )
+median_cf2 <- data.frame(provid=1:nrow(cf2),
+    slowdown=apply(cf2, 1, median) )
 CI80_cf2 <- data.frame(provid=1:nrow(cf2), 
     slowdown=t( apply(cf2, 1, quantile, probs=c(0.1, 0.9))) )
 
@@ -111,10 +116,10 @@ results <- data.frame(
     group=mapping[ match(as.numeric(rownames(obs.count)), mapping[, 2]), 2 ] , 
     groupname=mapping[ match(as.numeric(rownames(obs.count)), mapping[, 2]), 1 ] , 
     observed_species=obs.count , 
-    expected_mean=ex.mus, 
+    expected_median=ex.med, 
     expected_CI_lower=ex.CI[,1], 
     expected_CI_higher=ex.CI[,2],
-    slowdown=round(signif(mean_cf2$slowdown, 2 ), 4 ),
+    slowdown=round(signif(median_cf2$slowdown, 2 ), 4 ),
     slowdown_CI_lower=round(signif(CI80_cf2[,2], 2), 4),
     slowdown_CI_higher=round(signif(CI80_cf2[,3], 2), 4)
 )
@@ -131,7 +136,7 @@ end <- data$end
 # pull out the second coefficient for each province across each posterior sample
 prov.cf1 <- apply(coef, 1, function(i) i[ ,1])
 prov.cf2 <- apply(coef, 1, function(i) i[ ,2])
-# for each provence
+# for each group
 lambda <- lapply(1:length(end), function(ii) {   
     # ii <- 1
     cf1 <- prov.cf1[ii, ]
@@ -147,7 +152,7 @@ lambda <- lapply(1:length(end), function(ii) {
     }) # end coef pair
     res <- data.frame( do.call(rbind, cPair) )
     res
-}) %>% rbind.fill # end coastline
+}) %>% rbind.fill # end group
 
 
 #

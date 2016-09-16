@@ -19,9 +19,8 @@ zips <- fit # reassign to zips
 rm(fit) # remove from memory
 
 post.forecast <- function(data, ftime, model) {
-    outs <- extract(zips, permuted = TRUE) # sample the posterior
-    p <- data$P # num of groups
-    initial <- sapply(1:nrow(data$counts), function(i) data$counts[ i, data$end[i]] )
+    outs <- extract(model, permuted = TRUE) # posterior
+    p <- data$P # number of groups
 
     # regression
     coef0 <- apply(outs$coef[, , 1], 2, function(x) sample(x, 1))
@@ -35,21 +34,26 @@ post.forecast <- function(data, ftime, model) {
     gam <- apply(outs$gamma, 2, function(x) sample(x, 1))  # for each prov
     eta <- apply(outs$eta, 2, function(x) sample(x, 1))  # for each prov
 
+    # t=1
+    phi <- apply(outs$phi, 2, function(x) sample(x, 1))  # for each prov
+
+    # initial count
+    initial <- sapply(seq(p), function(pp) data$counts[ pp, data$str[pp]])
+
     # by province
     out <- list()
     for(ii in seq(p)) {
-        all_toff <- rev(rev(data$off[ii, ])[seq(data$end[ii])])
+        all_toff <- data$off[ii, ][data$str[ii]:data$end[ii]] # offset starts at first naming year
         # generate offset segment by sampling past decade of offsets
-        toff <- sample(all_toff[ (length(all_toff) - ftime ) : length(all_toff) ], ftime, replace=TRUE)
+        toff <- sample(all_toff[ (length(all_toff) - ftime ) : length(all_toff) ], 
+            ftime, replace=TRUE)
 
-        # by time point
         mu <- c()
         theta <- c()
         oo <- data$counts[ii, data$end[ii]]
         co <- c() # empty expected count vec
-
-        for(jj in 1:ftime) {  # I've changed the time seq to extend the series by ftime years
-          # jj = 2
+        # by time point
+        for(jj in 1:ftime) {  # time seq extends the series by ftime years
           if(jj == 1) { # the starting point is the number of species described at end of time series.
             mu[jj] <- oo
             theta[jj] <- 0
@@ -61,11 +65,9 @@ post.forecast <- function(data, ftime, model) {
             val <- (oo[jj - 1] == 0) * 1
             theta[jj] <- (val * gam[ii]) + ((1 - val) * eta[ii])
 
-            # need to add in offset (# number of papers per year)
             co[jj] <- rZIP(1, mu = (toff[jj] + 1) * mu[jj], 
                            sigma = theta[jj])
-            # update observed count to the new expected count - seems necessary if forecasting
-            oo[jj] <- co[jj]
+            oo[jj] <- co[jj] # current count becomes next expected count
           }
         }
         out[[ii]] <- co
@@ -75,6 +77,6 @@ post.forecast <- function(data, ftime, model) {
 
 # simulate the forecast
 forecast <- mclapply(1:1000, mc.cores=4, function(ii) {
-   post.forecast(data = data, ftime=ftime, model = zips) 
+   post.forecast(data=data, ftime=ftime, model=zips) 
 })
 save(forecast, file="data/dump/forecast.data")
