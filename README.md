@@ -1,6 +1,6 @@
 # BAYSIDE - (BAYesian SpecIes DiscovEry)
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.154051.svg)](https://doi.org/10.5281/zenodo.154051)
+[![DOI](https://zenodo.org/badge/66583691.svg)](https://zenodo.org/badge/latestdoi/66583691)
 
 ## Required Software
 - R (with the following packages):
