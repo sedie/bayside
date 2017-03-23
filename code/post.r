@@ -1,7 +1,6 @@
 # run posterior simulation from model fit
 library(rstan)
 library(gamlss.dist)
-library(parallel)
 
 set.seed(420)
 
@@ -81,7 +80,7 @@ posterior.sim <- function(data, model, over = FALSE) {
 }
 
 # post sim
-allsim <- mclapply(1:1000, mc.cores=4, function(ii) {
+allsim <- lapply(1:1000, function(ii) {
     posterior.sim(data = data, model = zips, over = FALSE)
 } )
 save(allsim, file="data/dump/post.data")

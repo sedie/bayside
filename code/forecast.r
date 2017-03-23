@@ -3,7 +3,6 @@ ftime <- as.numeric(args[1])
 
 library(rstan)
 library(plyr)
-library(parallel)
 library(gamlss.dist)
 
 set.seed(420)
@@ -76,7 +75,7 @@ post.forecast <- function(data, ftime, model) {
 }
 
 # simulate the forecast
-forecast <- mclapply(1:1000, mc.cores=4, function(ii) {
+forecast <- lapply(1:1000, function(ii) {
    post.forecast(data=data, ftime=ftime, model=zips) 
 })
 save(forecast, file="data/dump/forecast.data")
