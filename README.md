@@ -53,7 +53,7 @@ Relevant model output dumped into the `output/` directory includes:
 
 ### Stan fit
 
-There's no telling how long the chains will need to be to get good mixing. For 18 groups and ~6000 species over 256 years we found that 5000 iterations was sufficient. The code is set up to do 10000 iterations with 5000 for warmup. Modify iterations in `stan` function call in `code/model.r`.
+There's no telling how long the chains will need to be to get good mixing. For 18 groups and ~6000 species over 256 years we found that 5000 iterations was sufficient. The code is set up to do 5000 iterations with 2500 for warmup. Modify iterations in `stan()` function call in `code/model.r`.
 
 ### Slow Plotting
 
