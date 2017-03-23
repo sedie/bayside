@@ -1,0 +1,1 @@
+Chains have converged. Model results are robust to posterior sampling.
