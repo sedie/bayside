@@ -40,7 +40,7 @@ posterior.sim <- function(data, model, over = FALSE) {
   if(over) phi <- apply(outs$phi, 2, function(x) sample(x, 1))
 
   sims <- list() # store simulations
-  # by province
+  # by group
   for(ii in seq(p)) {
     toff <- data$off[ii, ][data$str[ii]:data$end[ii]] # offset segment starts at first naming year
     mu <- c()

@@ -39,8 +39,8 @@ post.forecast <- function(data, ftime, model) {
     # initial count
     initial <- sapply(seq(p), function(pp) data$counts[ pp, data$str[pp]])
 
-    # by province
     out <- list()
+    # by group
     for(ii in seq(p)) {
         all_toff <- data$off[ii, ][data$str[ii]:data$end[ii]] # offset starts at first naming year
         # generate offset segment by sampling past decade of offsets
