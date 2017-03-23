@@ -4,13 +4,7 @@
 
 ## Required Software
 - R (with the following packages):
-    - `rstan`
-    - `dplyr`
-    - `plyr`
-    - `gamlss.dist`
-    - `ggplot2`
-    - `parallel`
-        * STAN sampler is set to run with 4 chains on 4 cores in parallel. Sections of the posterior simulation and forecasting are also set to run with 4 parallel cores. User should edit code directly to either dial up or dial down the number cores to use.
+    - `rstan`, `dplyr`, `plyr`, `gamlss.dist`, `ggplot2`, `parallel`
 
 ## Data
 
@@ -34,27 +28,32 @@ The call above executes the individual model components in sequence from `R/*`.
 
 Alternatively, the model can be run within an active R session using the specified run structure in `bayside.r`.
 
+**NOTE** Stan sampler is set to run with 4 chains on 4 cores in parallel. User should directly edit code in `code/model.r` to either dial up or dial down the number cores used for sampling.
+
 ### Choice of Priors
 
-As coded, the model uses largely default priors following the [Stan manual](http://mc-stan.org/documentation/). Changing priors must be done directly in the Stan code.
+As coded, the model uses largely default priors following the [Stan manual](http://mc-stan.org/documentation/). Changing priors must be done directly in the Stan code `code/zip_count.stan`.
 
 ## Results
 
-**NOTE** It is recommended to load the model output object `load("data/dump/fit.data")` and check for convergence of sampling chains by typing the stan object name `fit` into the R console. Rhat values should be ~1. 
-
 Relevant model output dumped into the `output/` directory includes:
 
-* `fit.pdf` shows the observed description time series in black and sampled posterior simulations in blue
+* `chain_sampling.txt`. Check for convergence of sampling chains (i.e., Rhat values ~= 1). If chains have not converged, please see **Stan fit** section in "Troubleshooting" below. Model results are unreliable if chains have not converged.
+
+* `cumulative_fit.pdf` shows the cumulative observed description time series in black and sampled posterior simulations in blue.
+
+* `count_fit.pdf` shows the observed description counts per year with the sampled posterior simulation counts in blue.
+
+* `regression.pdf` shows the observed description counts per year with the mean trend in description rate in black and the sampled posterior simulations for regression fits in blue.
 
 * `results.csv` is a table providing estimated long-term trends (i.e., the "slowdowns") and the forecasted number of species with credible intervals.
-
 
 ## Troubleshooting
 
 ### Stan fit
 
-There's no telling how long the chains will need to be to get good mixing. For 18 groups and ~6000 species over 256 years we found that 5000 iterations was sufficient. The code is set up to do 5000 iterations with 2500 for warmup. Modify iterations in `stan()` function call in `code/model.r`.
+There's no telling how long the chains will need to be to get good mixing. For 18 groups and ~6000 species over 256 years we found that 5000 iterations was sufficient. The code is set up to do 5000 iterations with 2500 for warmup. Modify the number of iterations in `stan()` function call in `code/model.r`.
 
 ### Slow Plotting
 
-ggplot plots features much more slowly than base R. Thus, it can take `code/plot.r` a few minutes to generate the `output/fit.pdf` plot. The plotting script plots 200 simulation lines per group by default, but that parameter can easily be changed in the `PLOT MODEL FIT` block of `plot.r`.
+Depending  on the number of groups, plotting can take a few minutes. We use ggplot, which is slower than base R for plotting many features in the same device. The plotting script plots 200 simulation lines per group, but that parameter can easily be changed in the `PLOT MODEL FIT` block of `plot.r`.
