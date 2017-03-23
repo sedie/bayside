@@ -15,11 +15,11 @@ dataRAW <- read.csv("data/data.csv") # original data
 data <- read_rdump("data/dump/count_info.data.R") # initial model data
 
 
-load("data/dump/fit.data") # zero inflated fits --loads as fit
+load("data/dump/fit.data") # zero inflated fits --loads as `fit`
 zips <- fit # reassign to zips
 rm(fit) # remove from memory
-load("data/dump/post.data") # posterior samples -- loads as allsim
-load("data/dump/forecast.data") # forecast data -- loads as forecast
+load("data/dump/post.data") # posterior samples -- loads as `allsim`
+load("data/dump/forecast.data") # forecast data -- loads as `forecast`
 
 # map model indeces to original variables
 mapping <- data.frame( 
@@ -29,10 +29,35 @@ mapping <- data.frame(
 #   END \\ LOAD --------------------------------------------------------------------------------------------
 
 
+# CHECK CHAIN CONVERGENCE --------------------------------------------------------------------
+
+# report any parameters with chains that didn't mix
+badchain <- summary(zips)$summary %>%
+    data.frame(par=row.names( . ), . ) %>%
+    filter(Rhat > 1.1 | Rhat < 0.9)
+
+# write warning output
+if (nrow(badchain) > 0) {
+    interpret <- FALSE
+    sink("output/chain_sampling.txt")
+    cat("Chains have not converged. Increase interations in sampling in stan() function 
+        call in code/model.r. Do not interpret model results as parameter estimates are 
+        currently highly unstable.")
+    sink()
+} else {
+    interpret <- TRUE
+    sink("output/chain_sampling.txt")
+    cat("Chains have converged. Model results are robust to posterior sampling.")
+    sink()
+}
+
+# END \\ CHECK CHAIN CONVERGENCE ----------------------------------------------------------
+
+
 #   PREPARE CUMULATIVE SERIES -------------------------------------------------------------------
 
 # cumulative series for observed data
-cumm <- lapply( seq(data$P), function(ii) { # each prov
+cumm <- lapply( seq(data$P), function(ii) { # each group
     data.frame(
         index=1:data$end[ii],
         value=data$counts[ii, ],
@@ -184,6 +209,7 @@ mu_sim <- sims %>%
     group_by(group, year) %>%
     dplyr::summarize(mu=mean(lam)) %>%
     data.frame()
+
 
 # Plot long term trends
 P <- ggplot( ) +
